@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#070b14" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="manifest" href="site.webmanifest">
+  <meta name="description" content="An interactive visual explainer of frontier AI compute: dense vs MoE models, GPU concentration, training cost, power, and why efficiency can increase total compute demand." />
+  <title>Compute Frontier — Why AI Keeps Building Bigger Clusters</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="pages.css" />
+</head>
+<body>
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Compute Frontier home">
+      <span class="brand-mark">CF</span>
+      <span>Compute Frontier</span>
+    </a>
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="subnav-current" href="index.html">Story</a>
+      <a class="nav-page" href="atlas.html">Atlas</a>
+      <a class="nav-page" href="hardware.html">Hardware</a>
+      <a class="nav-page" href="lab.html">Compute Lab</a>
+      <a href="#sources">Sources</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+  </header>
+
+  <main id="top">
+    <section class="hero section-pad">
+      <div class="hero-copy reveal">
+        <div class="eyebrow"><span class="pulse-dot"></span> Frontier AI infrastructure · 2026</div>
+        <h1>Why do AI models need <span class="gradient-text">more compute</span> if architectures keep getting more efficient?</h1>
+        <p class="hero-lede">Because efficiency changes what becomes economically possible. MoE, lower precision, better kernels and faster interconnects reduce cost per unit of intelligence — and frontier labs reinvest the savings into larger workloads, more modalities, longer contexts, more experiments and shorter iteration cycles.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lab">Run the simulator <span>↘</span></a>
+          <a class="btn btn-ghost" href="#clusters">Explore mega-clusters</a>
+        </div>
+        <div class="hero-stats" aria-label="Key frontier compute numbers">
+          <div><strong data-count="30.84">0</strong><span>M H100-hours<br>Llama 3.1 405B</span></div>
+          <div><strong data-count="2.788">0</strong><span>M H800-hours<br>DeepSeek-V3 full training</span></div>
+          <div><strong data-count="1000000" data-compact="true">0</strong><span>+ TPUs<br>Google multi-site claim</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal delay-1">
+        <div class="orbital-card glass">
+          <div class="orbital-head"><span>LIVE SYSTEM MODEL</span><span class="mono">fabric://frontier</span></div>
+          <div class="compute-orbit" aria-hidden="true">
+            <div class="core"><span>AI</span><small>MODEL</small></div>
+            <div class="ring ring-1"><i></i><i></i><i></i><i></i></div>
+            <div class="ring ring-2"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="ring ring-3"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="throughput-panel">
+            <div><span>Active params</span><strong id="heroActive">37B</strong></div>
+            <div><span>Total params</span><strong id="heroTotal">671B</strong></div>
+            <div><span>Activation ratio</span><strong id="heroRatio">5.5%</strong></div>
+          </div>
+          <div class="scanline"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ticker" aria-label="Core relationships">
+      <div class="ticker-track">
+        <span>TRAINING COMPUTE ≈ ACTIVE PARAMETERS × TOKENS × OPS</span><i>◆</i>
+        <span>MODEL SIZE ≈ TOTAL PARAMETERS × BYTES/PARAMETER</span><i>◆</i>
+        <span>WALL-CLOCK TIME ≈ TOTAL GPU-HOURS ÷ GPU COUNT</span><i>◆</i>
+        <span>USEFUL SCALE = FLOPS × MEMORY × NETWORK × SOFTWARE</span><i>◆</i>
+        <span>TRAINING COMPUTE ≈ ACTIVE PARAMETERS × TOKENS × OPS</span><i>◆</i>
+        <span>MODEL SIZE ≈ TOTAL PARAMETERS × BYTES/PARAMETER</span><i>◆</i>
+      </div>
+    </section>
+
+    <section id="paradox" class="section-pad section-grid">
+      <div class="section-intro reveal">
+        <div class="kicker">01 · THE EFFICIENCY PARADOX</div>
+        <h2>Cheaper per token does not mean cheaper frontier.</h2>
+        <p>MoE attacks one term in the compute equation: how many parameters participate in each token. The saved compute can be spent elsewhere.</p>
+      </div>
+      <div class="paradox-board reveal delay-1">
+        <div class="equation-card glass">
+          <div class="eq-label">Simplified pretraining compute</div>
+          <div class="equation"><span>C</span><b>≈</b><span>6</span><b>×</b><span class="accent">N<sub>active</sub></span><b>×</b><span class="accent-2">D</span></div>
+          <div class="eq-notes"><span>N<sub>active</sub> = active params</span><span>D = training tokens</span></div>
+        </div>
+        <div class="trade-grid">
+          <div class="trade-card"><div class="trade-icon">↘</div><h3>MoE</h3><p>Fewer parameters active per token.</p><strong>Compute / token ↓</strong></div>
+          <div class="trade-card"><div class="trade-icon">↗</div><h3>More data</h3><p>Text, code, images, audio and video.</p><strong>Tokens processed ↑</strong></div>
+          <div class="trade-card"><div class="trade-icon">↗</div><h3>Long context</h3><p>More state and attention work per example.</p><strong>Memory + comms ↑</strong></div>
+          <div class="trade-card"><div class="trade-icon">↗</div><h3>Reasoning</h3><p>RL, synthetic traces and inference-time search.</p><strong>System compute ↑</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="image-break section-pad reveal">
+      <div class="image-copy">
+        <span class="kicker">THE REAL BOTTLENECK</span>
+        <h2>A million chips are useful only if they can behave like one machine.</h2>
+        <p>At frontier scale, the network becomes part of the computer. MoE can reduce arithmetic while increasing the importance of all-to-all expert routing, memory bandwidth and topology.</p>
+      </div>
+      <img src="assets/compute-fabric.svg" alt="Illustration of GPU racks connected through a hierarchical AI network fabric" />
+    </section>
+
+    <section id="models" class="section-pad">
+      <div class="section-intro reveal wide">
+        <div class="kicker">02 · REAL TRAINING RUNS</div>
+        <h2>Same frontier ambition. Very different compute profiles.</h2>
+        <p>These are public, model-specific disclosures — not estimates of total company R&amp;D spend.</p>
+      </div>
+      <div class="model-grid">
+        <article class="model-card reveal" data-hours="30.84" data-unit="H100">
+          <div class="model-top"><span class="chip dense">DENSE</span><span class="mono">META · 2024</span></div>
+          <h3>Llama 3.1 405B</h3>
+          <div class="model-metric"><strong>30.84M</strong><span>H100 GPU-hours</span></div>
+          <div class="bar"><i style="--w:100%"></i></div>
+          <div class="model-row"><span>Architecture</span><b>405B dense</b></div>
+          <div class="model-row"><span>Training tokens</span><b>~15T</b></div>
+          <div class="model-row"><span>Published TDP basis</span><b>700 W / H100</b></div>
+          <a href="https://huggingface.co/meta-llama/Llama-3.1-405B/blob/main/README.md" target="_blank" rel="noreferrer">Primary source ↗</a>
+        </article>
+
+        <article class="model-card reveal delay-1" data-hours="2.788" data-unit="H800">
+          <div class="model-top"><span class="chip moe">MOE</span><span class="mono">DEEPSEEK · 2024</span></div>
+          <h3>DeepSeek-V3</h3>
+          <div class="model-metric"><strong>2.788M</strong><span>H800 GPU-hours</span></div>
+          <div class="bar"><i style="--w:9.04%"></i></div>
+          <div class="model-row"><span>Total / active</span><b>671B / 37B</b></div>
+          <div class="model-row"><span>Training tokens</span><b>14.8T</b></div>
+          <div class="model-row"><span>Activation ratio</span><b>~5.5%</b></div>
+          <a href="https://arxiv.org/abs/2412.19437" target="_blank" rel="noreferrer">Technical report ↗</a>
+        </article>
+
+        <article class="model-card reveal delay-2" data-hours="2.38" data-unit="H100">
+          <div class="model-top"><span class="chip moe">MOE</span><span class="mono">META · 2025</span></div>
+          <h3>Llama 4 Maverick</h3>
+          <div class="model-metric"><strong>2.38M</strong><span>H100 GPU-hours</span></div>
+          <div class="bar"><i style="--w:7.72%"></i></div>
+          <div class="model-row"><span>Total / active</span><b>400B / 17B</b></div>
+          <div class="model-row"><span>Training tokens</span><b>~22T multimodal</b></div>
+          <div class="model-row"><span>Activation ratio</span><b>~4.3%</b></div>
+          <a href="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Original/blob/main/README.md" target="_blank" rel="noreferrer">Primary source ↗</a>
+        </article>
+      </div>
+      <p class="micro-note reveal">GPU-hour comparisons are useful but not perfectly apples-to-apples: H100 and H800 differ, software stacks differ, and “full training” boundaries vary by disclosure.</p>
+    </section>
+
+    <section id="clusters" class="section-pad cluster-section">
+      <div class="section-intro reveal wide">
+        <div class="kicker">03 · WHY CONCENTRATE CAPACITY?</div>
+        <h2>Owning GPUs is not the same as building a training computer.</h2>
+        <p>The harder engineering problem is connecting enough accelerators with adequate bandwidth, latency, memory locality, power and cooling to keep them productive on one workload.</p>
+      </div>
+
+      <div class="cluster-stage reveal">
+        <div class="cluster-tabs" role="tablist" aria-label="Mega-cluster examples">
+          <button class="cluster-tab active" data-cluster="google" role="tab">Google</button>
+          <button class="cluster-tab" data-cluster="microsoft" role="tab">Microsoft</button>
+          <button class="cluster-tab" data-cluster="aws" role="tab">AWS</button>
+          <button class="cluster-tab" data-cluster="xai" role="tab">xAI</button>
+        </div>
+        <div class="cluster-display glass">
+          <div class="cluster-copy">
+            <div class="cluster-badge" id="clusterBadge">MULTI-SITE TRAINING</div>
+            <h3 id="clusterName">Google Pathways + TPU</h3>
+            <p id="clusterDesc">Google says JAX + Pathways can distribute training across multiple sites and scale a single training system across more than one million TPUs globally.</p>
+            <div class="cluster-kpis">
+              <div><span>Publicly disclosed scale</span><strong id="clusterScale">&gt;1M TPUs</strong></div>
+              <div><span>Topology</span><strong id="clusterTopology">Multi-site</strong></div>
+              <div><span>Why it matters</span><strong id="clusterWhy">Weeks, not months</strong></div>
+            </div>
+            <a id="clusterLink" href="https://blog.google/intl/en-in/company-news/technology/sundar-pichai-io-2026/" target="_blank" rel="noreferrer">Open source ↗</a>
+          </div>
+          <div class="cluster-viz" id="clusterViz" aria-label="Animated cluster topology visualization">
+            <svg viewBox="0 0 620 420" role="img" aria-label="Diagram showing multiple compute sites connected to a central training fabric">
+              <defs>
+                <linearGradient id="lineGlow" x1="0" x2="1"><stop offset="0" stop-color="#6be4ff"/><stop offset="1" stop-color="#b783ff"/></linearGradient>
+                <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <g class="links" stroke="url(#lineGlow)" stroke-width="2" fill="none" opacity=".65">
+                <path d="M118 105 C230 105 240 210 310 210"/><path d="M502 105 C390 105 380 210 310 210"/><path d="M118 315 C230 315 240 210 310 210"/><path d="M502 315 C390 315 380 210 310 210"/>
+              </g>
+              <g class="site" transform="translate(52 58)"><rect width="132" height="94" rx="18"/><text x="66" y="42">SITE A</text><text class="sub" x="66" y="64">superpods</text></g>
+              <g class="site" transform="translate(436 58)"><rect width="132" height="94" rx="18"/><text x="66" y="42">SITE B</text><text class="sub" x="66" y="64">superpods</text></g>
+              <g class="site" transform="translate(52 268)"><rect width="132" height="94" rx="18"/><text x="66" y="42">SITE C</text><text class="sub" x="66" y="64">superpods</text></g>
+              <g class="site" transform="translate(436 268)"><rect width="132" height="94" rx="18"/><text x="66" y="42">SITE D</text><text class="sub" x="66" y="64">superpods</text></g>
+              <g class="hub" transform="translate(242 158)" filter="url(#glow)"><rect width="136" height="104" rx="28"/><text x="68" y="45">TRAINING</text><text x="68" y="67">FABRIC</text></g>
+              <circle class="packet p1" r="5"><animateMotion dur="2.6s" repeatCount="indefinite" path="M118 105 C230 105 240 210 310 210"/></circle>
+              <circle class="packet p2" r="5"><animateMotion dur="3s" repeatCount="indefinite" path="M502 105 C390 105 380 210 310 210"/></circle>
+              <circle class="packet p3" r="5"><animateMotion dur="2.4s" repeatCount="indefinite" path="M118 315 C230 315 240 210 310 210"/></circle>
+              <circle class="packet p4" r="5"><animateMotion dur="3.2s" repeatCount="indefinite" path="M502 315 C390 315 380 210 310 210"/></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="hierarchy reveal">
+        <div class="hierarchy-line"></div>
+        <div class="hier-node"><b>GPU</b><span>HBM + Tensor cores</span></div>
+        <div class="hier-node"><b>NVLink domain</b><span>Tens of GPUs</span></div>
+        <div class="hier-node"><b>Rack / pod</b><span>100s–1,000s</span></div>
+        <div class="hier-node"><b>Datacenter fabric</b><span>10Ks–100Ks</span></div>
+        <div class="hier-node"><b>Multi-site WAN</b><span>100Ks–1M+</span></div>
+      </div>
+    </section>
+
+    <section class="moe-section section-pad">
+      <div class="section-intro reveal">
+        <div class="kicker">04 · MOE CHANGES THE BOTTLENECK</div>
+        <h2>Less arithmetic. More routing.</h2>
+        <p>A sparse MoE model stores many experts but activates only a subset for each token. That can slash matrix-multiply work while increasing pressure on memory placement and interconnect traffic.</p>
+      </div>
+      <div class="moe-visual reveal delay-1">
+        <img src="assets/moe-routing.svg" alt="Diagram showing tokens being dynamically routed to a subset of experts in a mixture-of-experts model" />
+        <div class="moe-legend">
+          <div><span class="dot d1"></span><b>Token router</b><small>chooses experts dynamically</small></div>
+          <div><span class="dot d2"></span><b>Inactive experts</b><small>stored but skipped for this token</small></div>
+          <div><span class="dot d3"></span><b>Active experts</b><small>compute + communicate</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="lab" class="section-pad lab-section">
+      <div class="section-intro reveal wide">
+        <div class="kicker">05 · FRONTIER COMPUTE LAB</div>
+        <h2>Design your own training run.</h2>
+        <p>Move the controls. The simulator estimates parameter storage, dense-equivalent training FLOPs, GPU-hours, wall-clock duration, electricity and accelerator rental. These are planning approximations, not quotes.</p>
+      </div>
+
+      <div class="lab-grid reveal">
+        <div class="controls glass">
+          <div class="control">
+            <label for="totalParams">Total parameters <output id="totalParamsOut">400B</output></label>
+            <input id="totalParams" type="range" min="20" max="2000" step="10" value="400" />
+            <div class="range-labels"><span>20B</span><span>2T</span></div>
+          </div>
+          <div class="control">
+            <label for="activeRatio">Active parameters <output id="activeRatioOut">10%</output></label>
+            <input id="activeRatio" type="range" min="2" max="100" step="1" value="10" />
+            <div class="range-labels"><span>Sparse 2%</span><span>Dense 100%</span></div>
+          </div>
+          <div class="control">
+            <label for="tokens">Training tokens <output id="tokensOut">20T</output></label>
+            <input id="tokens" type="range" min="1" max="100" step="1" value="20" />
+            <div class="range-labels"><span>1T</span><span>100T</span></div>
+          </div>
+          <div class="control">
+            <label for="gpuCount">Accelerators <output id="gpuCountOut">100,000</output></label>
+            <input id="gpuCount" type="range" min="1000" max="1000000" step="1000" value="100000" />
+            <div class="range-labels"><span>1K</span><span>1M</span></div>
+          </div>
+          <div class="control dual">
+            <div>
+              <label for="effectiveTflops">Effective TFLOP/s <output id="effectiveTflopsOut">400</output></label>
+              <input id="effectiveTflops" type="range" min="100" max="1500" step="25" value="400" />
+            </div>
+            <div>
+              <label for="hourlyCost">$/accelerator-hour <output id="hourlyCostOut">$4.00</output></label>
+              <input id="hourlyCost" type="range" min="0.5" max="8" step="0.1" value="4" />
+            </div>
+          </div>
+        </div>
+
+        <div class="results">
+          <div class="result-hero glass">
+            <span>Estimated wall-clock training time</span>
+            <strong id="daysResult">—</strong>
+            <small id="daysSub">assuming linear scaling at the selected effective throughput</small>
+            <div class="time-gauge"><i id="timeGauge"></i></div>
+          </div>
+          <div class="result-grid">
+            <div class="result-card glass"><span>Active params</span><strong id="activeParamsResult">—</strong><small>per token</small></div>
+            <div class="result-card glass"><span>BF16 checkpoint</span><strong id="modelSizeResult">—</strong><small>weights only</small></div>
+            <div class="result-card glass"><span>Training FLOPs</span><strong id="flopsResult">—</strong><small>≈ 6 × active params × tokens</small></div>
+            <div class="result-card glass"><span>Accelerator-hours</span><strong id="gpuHoursResult">—</strong><small>at selected effective TFLOP/s</small></div>
+            <div class="result-card glass"><span>Rental-equivalent</span><strong id="costResult">—</strong><small>compute only</small></div>
+            <div class="result-card glass"><span>GPU electricity</span><strong id="energyResult">—</strong><small>assuming 700W/accelerator</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-warning reveal">Reality is less linear: communication overhead, topology, failures, batch-size limits, checkpointing, optimizer choice and architecture all matter. At extreme scale, adding 2× accelerators does not guarantee 2× speed.</div>
+    </section>
+
+    <section class="iteration-section section-pad">
+      <div class="iteration-copy reveal">
+        <div class="kicker">06 · THE STRATEGIC VALUE OF CONCENTRATION</div>
+        <h2>The scarce resource is often <em>iteration time</em>, not just FLOPs.</h2>
+        <p>A frontier program is a loop: hypothesize → train → evaluate → change data/model → train again. Compressing a run from months to weeks can multiply the number of serious research cycles per year.</p>
+        <div class="iteration-toggle">
+          <button class="iter-btn active" data-days="180">Small cluster</button>
+          <button class="iter-btn" data-days="45">Mega-cluster</button>
+        </div>
+      </div>
+      <div class="year-ring reveal delay-1">
+        <div class="ring-label"><strong id="iterationsPerYear">2.0×</strong><span>major cycles / year</span></div>
+        <svg viewBox="0 0 340 340" aria-hidden="true">
+          <circle cx="170" cy="170" r="132" class="ring-bg"/>
+          <circle cx="170" cy="170" r="132" class="ring-progress" id="iterationRing" pathLength="100"/>
+        </svg>
+        <div class="ring-points"><span>idea</span><span>train</span><span>eval</span><span>iterate</span></div>
+      </div>
+    </section>
+
+    <section class="summary section-pad">
+      <div class="summary-card reveal">
+        <div class="summary-word">EFFICIENCY</div><div class="summary-op">×</div>
+        <div class="summary-word">SCALE</div><div class="summary-op">×</div>
+        <div class="summary-word">NETWORK</div><div class="summary-op">=</div>
+        <div class="summary-word glow">FRONTIER</div>
+      </div>
+      <p class="summary-note reveal">Efficiency improves intelligence per unit compute. Concentration determines how much compute can be applied inside a useful wall-clock window. Frontier labs pursue both.</p>
+    </section>
+
+    <section class="section-pad reveal">
+      <div class="page-footer-cta" style="width:100%;margin:0">
+        <div><h2>Continue into the Atlas.</h2><p>The story explains why compute grows. The Atlas shows who is building the systems, the Hardware timeline shows what sits inside them, and the Compute Lab lets you change the assumptions yourself.</p></div>
+        <div class="hero-actions" style="margin:0"><a class="btn btn-primary" href="atlas.html">Open Atlas →</a><a class="btn btn-ghost" href="lab.html">Compute Lab</a></div>
+      </div>
+    </section>
+
+    <section id="sources" class="section-pad sources-section">
+      <div class="section-intro reveal wide">
+        <div class="kicker">07 · SOURCES &amp; METHODOLOGY</div>
+        <h2>Trace the numbers.</h2>
+        <p>Primary sources are linked directly. Company infrastructure claims are presented as claims from those organizations, not independently audited fleet inventories.</p>
+      </div>
+      <div class="sources-grid reveal">
+        <a href="https://huggingface.co/meta-llama/Llama-3.1-405B/blob/main/README.md" target="_blank" rel="noreferrer"><b>Meta</b><span>Llama 3.1 405B model card — 30.84M H100 GPU-hours</span><em>↗</em></a>
+        <a href="https://arxiv.org/abs/2412.19437" target="_blank" rel="noreferrer"><b>DeepSeek</b><span>DeepSeek-V3 technical report — 671B total / 37B active, 2.788M H800-hours</span><em>↗</em></a>
+        <a href="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Original/blob/main/README.md" target="_blank" rel="noreferrer"><b>Meta</b><span>Llama 4 model card — Maverick 2.38M H100-hours, Scout 5.0M</span><em>↗</em></a>
+        <a href="https://blog.google/intl/en-in/company-news/technology/sundar-pichai-io-2026/" target="_blank" rel="noreferrer"><b>Google</b><span>I/O 2026 — Pathways training across more than 1M TPUs globally</span><em>↗</em></a>
+        <a href="https://news.microsoft.com/source/features/ai/from-wisconsin-to-atlanta-microsoft-connects-datacenters-to-build-its-first-ai-superfactory/" target="_blank" rel="noreferrer"><b>Microsoft</b><span>Fairwater — multi-site training with hundreds of thousands of Blackwell GPUs</span><em>↗</em></a>
+        <a href="https://aws.amazon.com/blogs/aws/aws-weekly-roundup-project-rainier-online-amazon-nova-amazon-bedrock-and-more-november-3-2025/" target="_blank" rel="noreferrer"><b>AWS</b><span>Project Rainier — nearly 500,000 Trainium2 chips</span><em>↗</em></a>
+        <a href="https://x.ai/colossus" target="_blank" rel="noreferrer"><b>xAI</b><span>Colossus — 200K H100s described as a single interconnected cluster</span><em>↗</em></a>
+        <a href="https://x.ai/news/anthropic-compute-partnership" target="_blank" rel="noreferrer"><b>SpaceXAI</b><span>Colossus 1 — over 220,000 NVIDIA GPUs including H100, H200 and GB200</span><em>↗</em></a>
+      </div>
+      <div class="method reveal">
+        <b>Simulator methodology.</b> BF16 checkpoint = total parameters × 2 bytes. Training FLOPs ≈ 6 × active parameters × training tokens. Accelerator-hours = FLOPs ÷ (effective TFLOP/s × 10¹² × 3600). Electricity assumes 700W per accelerator and excludes networking, CPUs, storage and cooling/PUE. Rental-equivalent cost is accelerator-hours × chosen hourly rate.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div><b>Compute Frontier</b><span>Interactive explainer · static, GitHub Pages-ready</span></div>
+    <div class="mono">Built for exploration, not prediction.</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
